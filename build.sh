@@ -1,5 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 LLVM_RELEASE="$(cat llvm-release.txt)"
+LLVM_RELEASE_RC="$(cat llvm-rc.txt)"
+
+if [ -z "$LLVM_RELEASE_RC" ]; then
+  LLVM_RELEASE_RC=""
+else
+  LLVM_RELEASE_RC="-rc$LLVM_RELEASE_RC"
+fi
+
 if [ "$1" != "stage1" ]; then
     tar -xf build_directory.tar
 fi
@@ -11,7 +19,7 @@ if [ "$1" != "stage3" ]; then
     tar -cf build_directory.tar final
     exit 0
 fi
-_release_tag_version="$LLVM_RELEASE"
+_release_tag_version="$LLVM_RELEASE""$LLVM_RELEASE_RC"
 [ "$(cat revision.txt)" -ne 0 ] && _release_tag_version="$_release_tag_version"-"$(cat revision.txt)"
 echo "file_name=clang+llvm-$LLVM_RELEASE-x86-64-apple-darwin21.0.tar.gz" >> $GITHUB_OUTPUT
 echo "release_tag_version=$_release_tag_version" >> $GITHUB_OUTPUT
